@@ -277,11 +277,13 @@
                              mut-ret (atom nil)]
                          (when (and call? (not (nil? (:action res))))
                            (try
+                             #?(:cljs (js/console.time (str key)))
                              (reset! mut-ret ((:action res)))
                              (catch #?(:clj Throwable :cljs :default) e
                                (if (rethrow? e)
                                  (throw e)
-                                 (reset! error e)))))
+                                 (reset! error e)))
+                             #?(:cljs (finally (js/console.timeEnd (str key))))))
                          (let [value (:value res)]
                            (when call?
                              (assert (or (nil? value) (map? value))
